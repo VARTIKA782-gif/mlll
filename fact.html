@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fly Bite Chatbot</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
+    input, select, button { margin: 5px 0; padding: 8px; width: 100%; }
+    #chatbox { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; }
+    .bot { color: blue; margin: 5px 0; }
+    .user { color: green; margin: 5px 0; text-align: right; }
+  </style>
+</head>
+<body>
+
+<h2>Fly Bite Chatbot</h2>
+
+<div id="chatbox"></div>
+
+<input type="text" id="terminal" placeholder="Enter your Terminal (T1, T2, T3)" />
+<select id="diet">
+  <option value="">Select Diet Preference</option>
+  <option value="veg">Vegetarian</option>
+  <option value="non-veg">Non-Vegetarian</option>
+  <option value="vegan">Vegan</option>
+</select>
+<input type="number" id="budget" placeholder="Enter your budget (in ₹)" />
+
+<button onclick="chatbotResponse()">Get Meal Suggestions</button>
+
+<script>
+  const chatbox = document.getElementById('chatbox');
+  const meals = [
+    {name: "Veg Sandwich", terminal: "T1", diet: "veg", price: 150, time: 10},
+    {name: "Chicken Wrap", terminal: "T2", diet: "non-veg", price: 250, time: 15},
+    {name: "Vegan Salad", terminal: "T2", diet: "vegan", price: 180, time: 8},
+    {name: "Paneer Biryani", terminal: "T3", diet: "veg", price: 200, time: 12},
+    {name: "Grilled Chicken", terminal: "T1", diet: "non-veg", price: 300, time: 20},
+	 {name: "ice creen ", terminal: "T1", diet: "veg", price: 150, time: 10},
+    {name: "pizza and cold drink", terminal: "T2", diet: "veg", price: 250, time: 15},
+    {name: "pav bhaji", terminal: "T2", diet: "vegan", price: 180, time: 8},
+    {name: "meal->daal ,4 roti, rice ,salad, mix veg and sweet", terminal: "T3", diet: "veg", price: 300, time: 17},
+    {name: "chiken pizza", terminal: "T1", diet: "non-veg", price: 300, time: 20},
+  ];
+
+  function Message(sender, message) {
+   const msg = document.createElement('div');
+    msg.className = sender;
+    msg.textContent = message;
+    chatbox.appendChild(msg);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  function chatbotResponse() {
+    const terminal = document.getElementById('terminal').value.trim().toUpperCase();
+    const diet = document.getElementById('diet').value;
+    const budget = parseInt(document.getElementById('budget').value);
+
+    // User input shown in chatbox
+    Message('user', `Terminal: ${terminal}, Diet: ${diet}, Budget: ₹${budget}`);
+
+    // Input Understanding & Validation
+    if (!terminal || !["T1","T2","T3"].includes(terminal)) {
+      Message('bot', "Please enter a valid Terminal (T1, T2, or T3).");
+      return;
+    }
+    if (!diet) {
+      Message('bot', "Please select a diet preference.");
+      return;
+    }
+    if (isNaN(budget) || budget <= 0) {
+      Message('bot', "Please enter a valid budget greater than 0.");
+      return;
+  }
+    const availableMeals = meals.filter(meal => 
+      meal.terminal == terminal &&
+      meal.diet == diet &&
+      meal.price <= budget
+    );
+
+    if (availableMeals.length == 0) {
+      addMessage('bot', "Sorry, no meals match your preferences. Try increasing your budget or changing preferences.");
+    } else {
+      let reply = "Here are some meal options for you:\n";
+      availableMeals.forEach(meal => {
+        reply += `- ${meal.name} (₹${meal.price}, ready in ${meal.time} mins)\n`;
+      });
+      Message('bot', reply);
+    }
+  }
+</script>
+
+</body>
+</html>
+
